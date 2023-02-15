@@ -7,12 +7,7 @@ import asyncio
 
 class Model:
 
-    puntuacion = 0
-    isGameOver = False
-    fallos = 0
-    adivinadas = [] ##Las letras que ha adivinado
-    palabra_secreta = "" ##Palabra a adivinar
-    diccionario = {} ##{posicion de letra adivinada: letra adivinada} 
+    
     """
     Ej: palabra_secreta = "carrusel"
         adivinadas = ["c","r"]
@@ -25,6 +20,15 @@ class Model:
     
     
     def __init__(self):
+        
+        self.puntuacion = 0
+        self.isGameOver = False
+        self.fallos = 0
+        self.adivinadas = [] ##Las letras que ha adivinado
+        self.palabra_secreta = "" ##Palabra a adivinar
+        self.diccionario = {} ##{posicion de letra adivinada: letra adivinada} 
+        self.ganado = False
+        self.exito = False
         while(not self.isGameOver):
             asyncio.run(self.requestWord())
             self.fallos = 0
@@ -49,11 +53,34 @@ class Model:
             print("Error al consumir la API. Codigo de estado:", response.status_code)
 
 
+    def checkSuccess(self, letra):
+        # Verificar si la letra está en la palabra secreta
+        if letra in self.palabra_secreta:
+            self.exito = True
+            self.adivinadas.append(letra)
+            indexes = [i for i, c in enumerate(self.palabra_secreta) if c == letra]
+            for i in indexes:
+                self.diccionario[i] = letra
+            print(f"Buen trabajo! La letra esta en la palabra. Vidas: {5-self.fallos}")
+            self.puntuacion += 10
+            print(f"Puntuación: {self.puntuacion}")
 
+        else:
+            self.exito = False
+            self.fallos += 1
+            print(f"Lo siento, la letra no esta en la palabra. Vidas: {5-self.fallos}")
+            print(f"Puntuación: {self.puntuacion}")
+                        # Verificar si el usuario ha adivinado todas las letras
+        self.ganado = True
+        for letra in self.palabra_secreta:
+            if letra not in self.adivinadas:
+                self.ganado = False
+                break
+    
     def init_game(self):
         # Bucle principal del juego
         while self.fallos < 5:
-            exito = False
+            self.exito = False
             for letra in self.palabra_secreta:
                 if letra in self.adivinadas:
                     print(letra, end=" ")
@@ -67,13 +94,13 @@ class Model:
             letra = input("Adivina una letra: ")
             if len(letra) > 1 and len(letra) == len(self.palabra_secreta):
                 if letra == self.palabra_secreta:
-                    ganado = True
+                    self.ganado = True
                     print("Felicidades! Has adivinado la palabra secreta!")
                     self.puntuacion += (10*(len(self.palabra_secreta)-len(self.adivinadas)))
                     print(f"Puntuación: {self.puntuacion}")
                     break
                 else:
-                    exito = False
+                    self.exito = False
                     self.fallos += 1
                     print(f"Lo siento, esa no es la palabra secreta. Vidas: {5-self.fallos}")
                     print(f"Puntuación: {self.puntuacion}")
@@ -82,40 +109,16 @@ class Model:
             elif len(letra) >1 and len(letra) != len(self.palabra_secreta):
                 print(f"Porfavor digita una letra o la cantidad exacta de letras que tiene la palabra secreta ({len(self.palabra_secreta)})...")
             else:
-
-                # Verificar si la letra está en la palabra secreta
-                if letra in self.palabra_secreta:
-                    exito = True
-                    self.adivinadas.append(letra)
-                    indexes = [i for i, c in enumerate(self.palabra_secreta) if c == letra]
-                    for i in indexes:
-                        self.diccionario[i] = letra
-                    print(f"Buen trabajo! La letra esta en la palabra. Vidas: {5-self.fallos}")
-                    self.puntuacion += 10
-                    print(f"Puntuación: {self.puntuacion}")
-
-                else:
-                    exito = False
-                    self.fallos += 1
-                    print(f"Lo siento, la letra no esta en la palabra. Vidas: {5-self.fallos}")
-                    print(f"Puntuación: {self.puntuacion}")
-
-                # Verificar si el usuario ha adivinado todas las letras
-                ganado = True
-                for letra in self.palabra_secreta:
-                    if letra not in self.adivinadas:
-                        ganado = False
-                        break
-
+                self.checkSuccess(letra)
                 # Mostrar un mensaje si el usuario gana
-                if ganado:
+                if self.ganado:
                     print("Felicidades! Has adivinado todas las letras de la palabra secreta!")
                     print(f"Puntuación: {self.puntuacion}")
                     break
 
         # Mostrar un mensaje si el usuario pierde
-        if not ganado:
+        if not self.ganado:
             print("Lo siento, has agotado todas tus oportunidades. La palabra secreta era '{}'.".format(self.palabra_secreta))
             self.isGameOver = True
 
-##Model()
+Model()
