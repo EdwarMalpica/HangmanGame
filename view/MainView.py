@@ -21,6 +21,32 @@ class MainView:
     background: la imagen de fondo que se muestra en la ventana del juego.
     sounBack: el sonido de fondo que se reproducirá mientras el juego esté en curso.
     """
+    def resetView(self):
+
+        self.player = Player()
+        #Estados del juego
+        self.game_over = False
+        self.game_pause = False
+        self.menu_state = "main"
+        self.game_win = False
+        self.game_quit = False
+        self.get_data_length = False
+        self.check_char = False
+        self.isCorrect = False
+        self.isResponse = False
+        self.checUserName = False
+
+        self.userText = ""
+        self.startTime = 0
+        self.lenWord = 0
+        self.check = {}
+        self.lives = 0
+        self.loadImagesMenu()
+        self.backWord = ''
+        self.totalTime = 0
+        self.totalScore = 0
+
+
     def __init__(self):
 
         self.game = pygame.init()
@@ -45,7 +71,7 @@ class MainView:
         self.soundIncorrect = pygame.mixer.Sound("assets/sound/incorrect.mp3")
         self.soundCorrect = pygame.mixer.Sound("assets/sound/correct.mp3")
         self.font = pygame.font.SysFont("arialBlack", 30)
-        self.userText = ''
+        self.userText = ""
         self.startTime = 0
         self.lenWord = 0
         self.check = {}
@@ -53,7 +79,7 @@ class MainView:
         self.loadImagesMenu()
         self.backWord = ''
         self.totalTime = 0
-
+        self.totalScore = 0
 
 
     def getState(self):
@@ -75,8 +101,8 @@ class MainView:
     def drawWordOnBase(self):
 
         for clave, valor in self.check.items():
-            text = self.font.render(clave, True, RED)
-            self.screen.blit(text,[220 +(valor*55), 180])
+            text = self.font.render(valor, True, RED)
+            self.screen.blit(text,[220 +(clave*55), 180])
 
 
     def loadImagesMenu(self):
@@ -98,7 +124,7 @@ class MainView:
         self.buttonSalir = Button(300, 320, self.imgSalir, 1)
         self.buttonSalirPause = Button(187, 279, self.imgSalir, 1)
         self.buttonReanudar = Button(190, 186, self.imgReanudar, 1)
-        self.buttonSalirGameOver = Button(190, 350, self.imgSalir, 1)
+        self.buttonSalirGameOver = Button(190, 360, self.imgSalir, 1)
 
 
     """ 
@@ -190,7 +216,7 @@ class MainView:
             else:
                 self.soundIncorrect.play()
                 self.player.addArm()
-            self.userText = ''
+            self.userText = ""
             self.check_char = False
             self.isResponse = False
         """change = 0
@@ -206,7 +232,7 @@ class MainView:
         """
 
     def backToMenu(self):
-        self.userText = ''
+        self.userText = ""
         self.lives = 0
         self.check = {}
         self.word = ''
@@ -232,6 +258,7 @@ class MainView:
         self.screen.blit(self.imgGameOver, [0, 0])
         if self.buttonSalirGameOver.draw(self.screen):
             self.game_over = False
+            self.resetView()
             self.backToMenu()
 
 
@@ -265,6 +292,10 @@ class MainView:
         self.screen.blit(self.imgWin,[0,0])
         self.user_name_screen = self.font.render(self.userText, True, BLACK)
         self.screen.blit(self.user_name_screen, [320, 310])
+        self.screen.blit(self.font.render("Puntuación Total: " + str(self.totalScore), True, RED), (180, 420))
+        if self.buttonSalirGameOver.draw(self.screen):
+            self.game_over = False
+            self.backToMenu()
 
 
 

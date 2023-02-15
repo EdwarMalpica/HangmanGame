@@ -1,6 +1,7 @@
 from urllib import request
-import requests
+import requests ## pip install requests
 import asyncio
+import random
 
 
 # Lista de palabras posibles
@@ -19,35 +20,28 @@ class Model:
     
     
     
-    def __init__(self):
-        
-        self.puntuacion = 0
-        self.isGameOver = False
-        self.fallos = 0
-        self.adivinadas = [] ##Las letras que ha adivinado
+    def __init__(self): 
         self.palabra_secreta = "" ##Palabra a adivinar
+        asyncio.run(self.requestWord())      
+        self.adivinadas = [] ##Las letras que ha adivinado
         self.diccionario = {} ##{posicion de letra adivinada: letra adivinada} 
         self.ganado = False
         self.exito = False
-        while(not self.isGameOver):
-            asyncio.run(self.requestWord())
-            self.fallos = 0
-            self.adivinadas = []
-            self.diccionario = {}
-        self.puntuacion = 0
+        self.fallos = 0
+        self.score = 0
+
         
     async def requestWord(self):
-        url = "https://clientes.api.greenborn.com.ar/public-random-word?c=1&l=8"
-
+        leng = random.randint(4,8)
+        url = f"https://clientes.api.greenborn.com.ar/public-random-word?c=1&l={leng}"
         # Realizar una solicitud GET a la API
         response = requests.get(url)
         # Verificar si la solicitud tuvo éxito
         if response.status_code == 200:
             # Procesar los datos de la respuesta
             data = response.json()
-            print(data)
             self.palabra_secreta = data[0]
-            self.init_game()
+            print(self.palabra_secreta)
         else:
             # Mostrar un mensaje de error
             print("Error al consumir la API. Codigo de estado:", response.status_code)
@@ -62,63 +56,71 @@ class Model:
             for i in indexes:
                 self.diccionario[i] = letra
             print(f"Buen trabajo! La letra esta en la palabra. Vidas: {5-self.fallos}")
-            self.puntuacion += 10
-            print(f"Puntuación: {self.puntuacion}")
 
         else:
             self.exito = False
             self.fallos += 1
             print(f"Lo siento, la letra no esta en la palabra. Vidas: {5-self.fallos}")
-            print(f"Puntuación: {self.puntuacion}")
-                        # Verificar si el usuario ha adivinado todas las letras
+        # Verificar si el usuario ha adivinado todas las letras
         self.ganado = True
         for letra in self.palabra_secreta:
             if letra not in self.adivinadas:
                 self.ganado = False
                 break
     
-    def init_game(self):
-        # Bucle principal del juego
-        while self.fallos < 5:
+    def getLetter(self, letra):
+        if self.fallos < 5:
             self.exito = False
-            for letra in self.palabra_secreta:
-                if letra in self.adivinadas:
-                    print(letra, end=" ")
-                else:
-                    print("_", end=" ")
-            print("")
-            print("Letras adivinadas:", self.adivinadas)
-            print(self.diccionario)
-
-            # Obtener una letra del usuario
-            letra = input("Adivina una letra: ")
             if len(letra) > 1 and len(letra) == len(self.palabra_secreta):
                 if letra == self.palabra_secreta:
                     self.ganado = True
-                    print("Felicidades! Has adivinado la palabra secreta!")
-                    self.puntuacion += (10*(len(self.palabra_secreta)-len(self.adivinadas)))
-                    print(f"Puntuación: {self.puntuacion}")
-                    break
+                    ##print(f"Puntuación: {self.puntuacion}")
+                    ##print("Felicidades! Has adivinado la palabra secreta!")
                 else:
                     self.exito = False
                     self.fallos += 1
-                    print(f"Lo siento, esa no es la palabra secreta. Vidas: {5-self.fallos}")
-                    print(f"Puntuación: {self.puntuacion}")
-
-
+                    ##print(f"Lo siento, esa no es la palabra secreta. Vidas: {5-self.fallos}")
+                    ##print(f"Puntuación: {self.puntuacion}")
             elif len(letra) >1 and len(letra) != len(self.palabra_secreta):
-                print(f"Porfavor digita una letra o la cantidad exacta de letras que tiene la palabra secreta ({len(self.palabra_secreta)})...")
+                self.fallos += 1
+                ##print(f"Porfavor digita una letra o la cantidad exacta de letras que tiene la palabra secreta ({len(self.palabra_secreta)})...")
             else:
                 self.checkSuccess(letra)
-                # Mostrar un mensaje si el usuario gana
-                if self.ganado:
-                    print("Felicidades! Has adivinado todas las letras de la palabra secreta!")
-                    print(f"Puntuación: {self.puntuacion}")
-                    break
+    
+    def getDiccionario(self):
+        return self.diccionario
 
-        # Mostrar un mensaje si el usuario pierde
-        if not self.ganado:
-            print("Lo siento, has agotado todas tus oportunidades. La palabra secreta era '{}'.".format(self.palabra_secreta))
-            self.isGameOver = True
+    def getSecretWord(self):
+        return self.palabra_secreta
 
-Model()
+    def getLives(self):
+        return 5 - self.fallos
+    def isSuccess(self):
+        return self.exito
+    
+    def resetGame(self):
+        asyncio.run(self.requestWord())      
+        self.adivinadas = [] ##Las letras que ha adivinado
+        self.diccionario = {} ##{posicion de letra adivinada: letra adivinada} 
+        self.ganado = False
+        self.exito = False
+        self.fallos = 0
+        self.score = 0
+
+    def calculateScore(self, lives, time):
+        total = 0
+        total += lives*50
+        total += len(self.palabra_secreta)*20
+        ##puntuacion en funcion del tiempo
+        total += self.calculateScoreByTime(time)
+        self.score = total
+        print(self.score)
+
+    def calculateScoreByTime(self, time):
+        if time < 0:
+            return 0  # Si el tiempo es negativo, la puntuación es cero
+        elif time <= 10:
+            return 300  # Si el tiempo es de 10 segundos o menos, la puntuación es de 100 puntos
+        else:
+            return max(0, 100 - (time - 10))  
+        
