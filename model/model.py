@@ -8,7 +8,6 @@ import random
 
 class Model:
 
-    
     """
     Ej: palabra_secreta = "carrusel"
         adivinadas = ["c","r"]
@@ -16,9 +15,6 @@ class Model:
                        2:"r",
                        3:"r"}
     """
-    
-    
-    
     
     def __init__(self): 
         self.palabra_secreta = "" ##Palabra a adivinar
@@ -29,7 +25,6 @@ class Model:
         self.exito = False
         self.fallos = 0
         self.score = 0
-
         
     async def requestWord(self):
         leng = random.randint(4,8)
@@ -55,12 +50,9 @@ class Model:
             indexes = [i for i, c in enumerate(self.palabra_secreta) if c == letra]
             for i in indexes:
                 self.diccionario[i] = letra
-            print(f"Buen trabajo! La letra esta en la palabra. Vidas: {5-self.fallos}")
-
         else:
             self.exito = False
             self.fallos += 1
-            print(f"Lo siento, la letra no esta en la palabra. Vidas: {5-self.fallos}")
         # Verificar si el usuario ha adivinado todas las letras
         self.ganado = True
         for letra in self.palabra_secreta:
@@ -74,16 +66,11 @@ class Model:
             if len(letra) > 1 and len(letra) == len(self.palabra_secreta):
                 if letra == self.palabra_secreta:
                     self.ganado = True
-                    ##print(f"Puntuación: {self.puntuacion}")
-                    ##print("Felicidades! Has adivinado la palabra secreta!")
                 else:
                     self.exito = False
                     self.fallos += 1
-                    ##print(f"Lo siento, esa no es la palabra secreta. Vidas: {5-self.fallos}")
-                    ##print(f"Puntuación: {self.puntuacion}")
             elif len(letra) >1 and len(letra) != len(self.palabra_secreta):
                 self.fallos += 1
-                ##print(f"Porfavor digita una letra o la cantidad exacta de letras que tiene la palabra secreta ({len(self.palabra_secreta)})...")
             else:
                 self.checkSuccess(letra)
     
