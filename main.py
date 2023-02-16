@@ -13,7 +13,7 @@ class Controller:
         print(len(self.model.getSecretWord()))
         self.view = MainView()
         ##intanciar clase bd
-        self.players = [(2, 'Manuel', 200), (3, 'Esteban', 150), (1, 'Tania', 100), (7, 'Santiago', 25), (8, 'Santiago', 25), (4, 'Malpik', 10)]
+
 
     def showView(self):
         self.view.sounBack.play(loops=-1)
@@ -26,6 +26,15 @@ class Controller:
             self.view.resetWin = False
             self.model.resetGame()
             self.view.resetView()
+
+
+        if self.view.checUserName:
+            userName = self.view.playerName
+            print(userName)
+            self.view.checUserName = False
+            self.view.game_win = False
+            self.view.resetWin = True
+        ## ESTEBAN --> guardar en base de datos self.bd_model.savePlayer(userName, self.model.score)
 
         if self.view.get_data_length:
             self.view.lenWord = len(self.model.getSecretWord()) #Longitud de la palabra
@@ -46,22 +55,20 @@ class Controller:
                 self.view.isResponse = True
 
                 ##Establecer condicion de victoria
-                print(self.model.ganado)
                 if self.model.ganado:
                     lives = self.view.lives
                     timeUser = self.view.totalTime
                     self.model.calculateScore(lives, timeUser)
                     self.view.totalScore = self.model.score
                     self.view.game_win = True
-                    self.view.checUserName = True
                     #Se obtiene el nombre del usuario, las vidas y el tiempo
-                    userName = self.view.userText
-                    ##guardar en base de datos self.bd_model.savePlayer(userName,score)
+
 
             else:
                 self.view.game_over = True
         if self.view.menu_state == "ranking":
-            self.view.players = self.players
+            ## ESTEBAN -->  Igualar self.view.players a 
+            self.view.players = [(2, 'Manuel', 200), (3, 'Esteban', 150), (1, 'Tania', 100), (7, 'Santiago', 25), (8, 'Santiago', 25), (4, 'Malpik', 10)]
 
 
 

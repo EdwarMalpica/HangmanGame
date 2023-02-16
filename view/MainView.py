@@ -37,6 +37,7 @@ class MainView:
         self.checUserName = False
 
         self.userText = ""
+        self.playerName = ""
         self.startTime = 0
         self.lenWord = 0
         self.check = {}
@@ -67,6 +68,8 @@ class MainView:
         self.isResponse = False
         self.checUserName = False
         self.resetWin = False
+        self.playerName = ""
+
 
         self.background = pygame.image.load("assets/img/FondoJuego.png").convert()
         self.sounBack = pygame.mixer.Sound("assets/sound/Back.mp3")
@@ -179,9 +182,6 @@ class MainView:
                     if event.key == pygame.K_RETURN:
                         if self.game_win:
                             self.checUserName = True
-                            self.game_win = False
-                            self.resetWin = True
-                            self.backToMenu()
                         else:
                             self.check_char = True
 
@@ -189,7 +189,7 @@ class MainView:
                         self.userText = self.userText[:-1]
                     else:
                         if self.game_win:
-                            self.userText += event.unicode
+                            self.playerName += event.unicode
                         else:
                             if len(self.userText) < 1:
                                 self.userText += event.unicode
@@ -257,7 +257,7 @@ class MainView:
             if self.buttonRanking.draw(self.screen):
                 self.menu_state = "ranking"
             if self.buttonSalir.draw(self.screen):
-                print(self.menu_state)
+
                 pygame.quit()
                 sys.exit()
 
@@ -299,7 +299,7 @@ class MainView:
         elapsedTime = pygame.time.get_ticks() - self.startTime
         self.totalTime = elapsedTime/1000
         self.screen.blit(self.imgWin,[0,0])
-        self.user_name_screen = self.font.render(self.userText, True, BLACK)
+        self.user_name_screen = self.font.render(self.playerName, True, BLACK)
         self.screen.blit(self.user_name_screen, [320, 310])
         self.screen.blit(self.font.render("Puntuación Total: " + str(self.totalScore), True, RED), (180, 420))
     #Dibujar Tabla Ranking
