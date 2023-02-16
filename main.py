@@ -20,7 +20,8 @@ class Controller:
             self.eventsControl()
 
     def eventsControl(self):
-        if self.view.buttonSalirGameOver.draw(self.view.screen) or self.view.buttonSalirPause.draw(self.view.screen):
+        if self.view.buttonSalirGameOver.draw(self.view.screen) or self.view.buttonSalirPause.draw(self.view.screen) or self.view.resetWin:
+            self.view.resetWin = False
             self.model.resetGame()
             self.view.resetView()
 
@@ -31,7 +32,7 @@ class Controller:
         if self.view.check_char:
             #Cambiar condicional por verificacion de vidas
             if self.model.getLives() > 1:
-                char = self.view.userText
+                char = self.view.userText.lower()
                 #Se necesita si la palabra esta o no
                 self.model.getLetter(char)
                 self.view.isCorrect = self.model.isSuccess()
