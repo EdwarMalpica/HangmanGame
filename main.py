@@ -1,6 +1,7 @@
 import threading
 import time
 from model.model import Model
+from model.db_conector import Db_conector
 
 from view.MainView import MainView
 
@@ -12,7 +13,7 @@ class Controller:
         print(self.model.getSecretWord())
         print(len(self.model.getSecretWord()))
         self.view = MainView()
-        ##intanciar clase bd
+        self.database = Db_conector()
 
 
     def showView(self):
@@ -34,7 +35,8 @@ class Controller:
             self.view.checUserName = False
             self.view.game_win = False
             self.view.resetWin = True
-        ## ESTEBAN --> guardar en base de datos self.bd_model.savePlayer(userName, self.model.score)
+            self.database.createPlayer(userName, int(self.model.score))
+        
 
         if self.view.get_data_length:
             self.view.lenWord = len(self.model.getSecretWord()) #Longitud de la palabra
@@ -67,8 +69,8 @@ class Controller:
             else:
                 self.view.game_over = True
         if self.view.menu_state == "ranking":
-            ## ESTEBAN -->  Igualar self.view.players a 
-            self.view.players = [(2, 'Manuel', 200), (3, 'Esteban', 150), (1, 'Tania', 100), (7, 'Santiago', 25), (8, 'Santiago', 25), (4, 'Malpik', 10)]
+            self.view.players = self.database.getList() 
+            
 
 
 

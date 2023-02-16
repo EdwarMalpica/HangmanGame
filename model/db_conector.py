@@ -18,12 +18,19 @@ class Db_conector:
             except Exception as ex:
                 print(ex)
 
-        def createPlayer(name, score, self):
+        def createPlayer(self, name, score ):
+            name = name[:-1]
             self.cursor.execute(f"INSERT INTO Players VALUES ('{name}', {score})")
             self.cursor.commit()
  
         def getList(self):
-            self.cursor.close()
+            self.listPlayer = []
+            self.cursor.execute("SELECT TOP 6 * FROM Players order by 3 DESC") 
+            self.row = self.cursor.fetchone()
+            
+            while self.row:  
+                self.listPlayer.append(self.row)
+                self.row = self.cursor.fetchone()
             return self.listPlayer        
 
         
