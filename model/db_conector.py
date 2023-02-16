@@ -1,32 +1,31 @@
 ## instal pyodbc ----> pip install pyodbc
 import pyodbc 
 
-try:
-    cnxn = pyodbc.connect('DRIVER={SQL Server};Server=DESKTOP-P3OGUBB\SQLEXPRESS;Database=HangmanGame;Trusted_Connection=yes')
-    print("funciono")
-    cursor = cnxn.cursor()
-    listPlayer = []
-
-    cursor.execute("SELECT TOP 10 * FROM Players order by 3 DESC") 
-    row = cursor.fetchone() 
+class Db_conector:
     
+        def __init__(self):
+            try:
+                self.cnxn = pyodbc.connect('DRIVER={SQL Server};Server=DESKTOP-P3OGUBB\SQLEXPRESS;Database=HangmanGame;Trusted_Connection=yes')
+                self.cursor = self.cnxn.cursor()
+                self.listPlayer = []
 
-    def createPlayer(name, score):
-         cursor.execute(f"INSERT INTO Players VALUES ('{name}', {score})")
-         cursor.commit()
+                self.cursor.execute("SELECT TOP 6 * FROM Players order by 3 DESC") 
+                self.row = self.cursor.fetchone()
+            
+                while self.row:  
+                    self.listPlayer.append(self.row)
+                    self.row = self.cursor.fetchone()
+            except Exception as ex:
+                print(ex)
+
+        def createPlayer(name, score, self):
+            self.cursor.execute(f"INSERT INTO Players VALUES ('{name}', {score})")
+            self.cursor.commit()
  
-    
-    while row:
-        print (row)
-        listPlayer.append(row)
-        row = cursor.fetchone()
+        def getList(self):
+            self.cursor.close()
+            return self.listPlayer        
 
-
-    def getList():
-        return listPlayer        
-       
-    cursor.close()
+        
     
-except Exception as ex:
-    print(ex)
     
