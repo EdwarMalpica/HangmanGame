@@ -182,7 +182,6 @@ class MainView:
                     if event.key == pygame.K_RETURN:
                         if self.game_win:
                             self.checUserName = True
-                            
                         else:
                             self.check_char = True
 
@@ -258,7 +257,7 @@ class MainView:
             if self.buttonRanking.draw(self.screen):
                 self.menu_state = "ranking"
             if self.buttonSalir.draw(self.screen):
-                print(self.menu_state)
+
                 pygame.quit()
                 sys.exit()
 
