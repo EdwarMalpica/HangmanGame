@@ -23,11 +23,11 @@ class MainView:
     """
     def resetView(self):
 
-        self.player = Player()
         #Estados del juego
         self.game_over = False
         self.game_pause = False
         self.menu_state = "main"
+        self.player = Player()
         self.game_win = False
         self.game_quit = False
         self.get_data_length = False
@@ -41,10 +41,10 @@ class MainView:
         self.lenWord = 0
         self.check = {}
         self.lives = 0
-        self.loadImagesMenu()
         self.backWord = ''
         self.totalTime = 0
         self.totalScore = 0
+        self.resetWin = False
 
 
     def __init__(self):
@@ -78,7 +78,6 @@ class MainView:
         self.check = {}
         self.lives = 0
         self.loadImagesMenu()
-        self.backWord = ''
         self.totalTime = 0
         self.totalScore = 0
 
@@ -137,7 +136,7 @@ class MainView:
         if self.menu_state == "main":
             self.drawMainMenu()
         #Juego
-        if self.menu_state == "game":
+        elif self.menu_state == "game":
             if self.game_pause:
                 self.drawMenuPause()
             elif self.game_win:
@@ -177,6 +176,7 @@ class MainView:
                         if self.game_win:
                             self.checUserName = True
                             self.game_win = False
+                            self.resetWin = True
                             self.backToMenu()
                         else:
                             self.check_char = True
@@ -243,25 +243,28 @@ class MainView:
 
     #Dibuja el menu principal
     def drawMainMenu(self):
-        self.screen.blit(self.imgMainMenu, [0, 0])
-        self.screen.blit(self.imgTitleMain, [250, 50])
-        if self.buttonJugar.draw(self.screen):
-            self.startTime = pygame.time.get_ticks()
-            self.startGame()
-            self.menu_state = "game"
-        if self.buttonRanking.draw(self.screen):
-            pass
-        if self.buttonSalir.draw(self.screen):
-            pygame.quit()
-            sys.exit()
+        if self.menu_state == "main":
+            self.screen.blit(self.imgMainMenu, [0, 0])
+            self.screen.blit(self.imgTitleMain, [250, 50])
+            if self.buttonJugar.draw(self.screen):
+                self.startTime = pygame.time.get_ticks()
+                self.startGame()
+                self.menu_state = "game"
+            if self.buttonRanking.draw(self.screen):
+                print("ranking")
+            if self.buttonSalir.draw(self.screen):
+                print(self.menu_state)
+                print("Q pasa soy yo?")
+                pygame.quit()
+                sys.exit()
 
 
     #Dibuja la pantalla de game Over
     def drawGameOver(self):
         self.screen.blit(self.imgGameOver, [0, 0])
         if self.buttonSalirGameOver.draw(self.screen):
+            self.resetWin = True
             self.game_over = False
-            self.resetView()
             self.backToMenu()
 
 

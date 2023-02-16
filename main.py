@@ -20,7 +20,7 @@ class Controller:
             self.eventsControl()
 
     def eventsControl(self):
-        if self.view.buttonSalirGameOver.draw(self.view.screen) or self.view.buttonSalirPause.draw(self.view.screen) or self.view.resetWin:
+        if self.view.resetWin:
             self.view.resetWin = False
             self.model.resetGame()
             self.view.resetView()
