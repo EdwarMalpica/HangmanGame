@@ -54,6 +54,7 @@ class MainView:
         self.caption = pygame.display.set_caption("HangMan")
         self.clock = pygame.time.Clock()
         self.player = Player()
+        self.players = []
         #Estados del juego
         self.game_over = False
         self.game_pause = False
@@ -117,7 +118,7 @@ class MainView:
         self.imgTitleMain = pygame.image.load("assets/img/HANGMAN.png")
         self.imgGameOver =  pygame.image.load("assets/img/gameOver.png").convert()
         self.imgWin = pygame.image.load("assets/img/win.png").convert()
-        self.imgRankingBack = pygame.image.load("assets/img/reanking.png")
+        self.imgRankingBack = pygame.image.load("assets/img/ranking.png")
 
         self.buttonJugar = Button(300, 180, self.imgJugar, 1)
         self.buttonRanking = Button(300, 250, self.imgRanking, 1)
@@ -125,6 +126,8 @@ class MainView:
         self.buttonSalirPause = Button(187, 279, self.imgSalir, 1)
         self.buttonReanudar = Button(190, 186, self.imgReanudar, 1)
         self.buttonSalirGameOver = Button(190, 360, self.imgSalir, 1)
+        self.buttonSalirRanking = Button(190, 450, self.imgSalir, 1)
+
 
 
     """ 
@@ -145,7 +148,8 @@ class MainView:
                 self.drawGameOver()
             else:
                 self.drawGame()
-
+        elif self.menu_state == "ranking":
+            self.drawRanking()
         #if self.menu_state == "game":
         self.eventsControl()
         pygame.display.flip()
@@ -251,10 +255,9 @@ class MainView:
                 self.startGame()
                 self.menu_state = "game"
             if self.buttonRanking.draw(self.screen):
-                print("ranking")
+                self.menu_state = "ranking"
             if self.buttonSalir.draw(self.screen):
                 print(self.menu_state)
-                print("Q pasa soy yo?")
                 pygame.quit()
                 sys.exit()
 
@@ -299,6 +302,17 @@ class MainView:
         self.user_name_screen = self.font.render(self.userText, True, BLACK)
         self.screen.blit(self.user_name_screen, [320, 310])
         self.screen.blit(self.font.render("Puntuación Total: " + str(self.totalScore), True, RED), (180, 420))
+    #Dibujar Tabla Ranking
+    def drawRanking(self):
+        self.screen.blit(self.imgRankingBack, [0, 0])
+        for i in range(0,len(self.players)):
+            self.screen.blit(self.font.render(str(self.players[i][1]), True, BLACK), (190, 85 + (i*55) + (i*4)))
+            self.screen.blit(self.font.render(str(self.players[i][2]), True, BLACK), (480, 85 + (i*55)+ (i*4)))
+
+        if self.buttonSalirRanking.draw(self.screen):
+            self.menu_state = "main"
+        
+        
 
 
 

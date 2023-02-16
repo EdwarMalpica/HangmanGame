@@ -12,6 +12,8 @@ class Controller:
         print(self.model.getSecretWord())
         print(len(self.model.getSecretWord()))
         self.view = MainView()
+        ##intanciar clase bd
+        self.players = [(2, 'Manuel', 200), (3, 'Esteban', 150), (1, 'Tania', 100), (7, 'Santiago', 25), (8, 'Santiago', 25), (4, 'Malpik', 10)]
 
     def showView(self):
         self.view.sounBack.play(loops=-1)
@@ -58,9 +60,8 @@ class Controller:
 
             else:
                 self.view.game_over = True
-        if self.view.game_over:
-            #Obtener Puntuacion
-            pass
+        if self.view.menu_state == "ranking":
+            self.view.players = self.players
 
 
 
